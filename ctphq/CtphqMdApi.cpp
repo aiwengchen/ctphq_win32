@@ -3,27 +3,32 @@
 using namespace std;
 
 //会员代码
-TThostFtdcBrokerIDType g_chBrokerID;
+TThostFtdcBrokerIDType g_chBrokerID="9999";
 //交易用户代码
-TThostFtdcUserIDType g_chUserID;
+TThostFtdcUserIDType g_chUserID="015809";
+TThostFtdcPasswordType g_chPassword = "12qwasZX";
+
+TThostFtdcExchangeIDType	g_chExchangeID;
 
 void CtphqMdApi::OnFrontConnected()
 {
 	CThostFtdcReqUserLoginField reqUserLogin;
 	//get BrokerID
-	cout << "BrokerID:";
-	cin >> g_chBrokerID;
+	//cout << "BrokerID:";
+	//cin >> g_chBrokerID;
 	strcpy_s(reqUserLogin.BrokerID, g_chBrokerID);
 
 	//get userid
-	cout << "UserID:";
-	cin >> g_chUserID;
+	//cout << "UserID:";
+	//cin >> g_chUserID;
 	strcpy_s(reqUserLogin.UserID, g_chUserID);
 
 	//get password
-	cout << "password:";
-	cin >> reqUserLogin.Password;
+	//cout << "password:";
+	//cin >> reqUserLogin.Password;
 	
+	strcpy_s(reqUserLogin.Password, g_chPassword);
+
 	m_pUserApi->ReqUserLogin(&reqUserLogin, 0);
 
 }
@@ -52,10 +57,11 @@ void CtphqMdApi::OnRspUserLogin(CThostFtdcRspUserLoginField * pRspUserLogin, CTh
 	}
 	//端登成功
 	//订阅行情
+	
 	char *Instrumnet[] = { "au1606","ag1606" };
 	m_pUserApi->SubscribeMarketData(Instrumnet, 2);
 	//退订行情
-	m_pUserApi->UnSubscribeMarketData(Instrumnet, 2);
+	//m_pUserApi->UnSubscribeMarketData(Instrumnet, 2);
 }
 
 void CtphqMdApi::OnRspUserLogout(CThostFtdcUserLogoutField * pUserLogout, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
@@ -88,7 +94,7 @@ void CtphqMdApi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField * pSpec
 
 void CtphqMdApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField * pDepthMarketData)
 {
-	cout << "合约 " << pDepthMarketData->InstrumentID << "  最新 " << pDepthMarketData->LastPrice << "  成交量 " << pDepthMarketData->Volume
+	cerr << "合约 " << pDepthMarketData->InstrumentID << "  最新 " << pDepthMarketData->LastPrice << "  成交量 " << pDepthMarketData->Volume
 		<< "  买一价 " << pDepthMarketData->BidPrice1 << "卖一价" << pDepthMarketData->AskPrice1 << "  最高 " << pDepthMarketData->HighestPrice
 		<< "  最低 " << pDepthMarketData->LowestPrice << "  开盘 " << pDepthMarketData->OpenPrice << "  时间 " << pDepthMarketData->UpdateTime << endl;
 

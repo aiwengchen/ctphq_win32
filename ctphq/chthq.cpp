@@ -3,11 +3,10 @@
 using namespace std;
 #pragma comment(lib,"../Api/md/thostmduserapi.lib")
 
-CThostFtdcMdApi *pUserApi;
 
 int main()
 {
-	pUserApi = CThostFtdcMdApi::CreateFtdcMdApi();
+	CThostFtdcMdApi *pUserApi = CThostFtdcMdApi::CreateFtdcMdApi();
 
 	CtphqMdApi sh(pUserApi);
 
