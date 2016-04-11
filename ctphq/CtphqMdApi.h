@@ -2,11 +2,14 @@
 #ifndef CTPHQMDAPI_H
 #define CTPHQMDAPI_H
 
-#include "Api\ThostFtdcMdApi.h"
+#include ".\Api\ThostFtdcMdApi.h"
+
 
 class CtphqMdApi : public CThostFtdcMdSpi
 {
 public:
+	CtphqMdApi(CThostFtdcMdApi *pUserApi):m_pUserApi(pUserApi){}
+	~CtphqMdApi(){}
 	///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	virtual void OnFrontConnected();
 
@@ -51,6 +54,8 @@ public:
 	///询价通知
 	virtual void OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp);
 
+private:
+	CThostFtdcMdApi *m_pUserApi;
 };
 
 
