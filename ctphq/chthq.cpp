@@ -6,11 +6,11 @@ using namespace std;
 
 int main()
 {
-	CThostFtdcMdApi *pUserApi = CThostFtdcMdApi::CreateFtdcMdApi();
+	CThostFtdcMdApi *pUserApi = CThostFtdcMdApi::CreateFtdcMdApi("",false,false);
 
-	CtphqMdApi sh(pUserApi);
+	CtphqMdApi pSpi(pUserApi);
 
-	pUserApi->RegisterSpi(&sh);
+	pUserApi->RegisterSpi(&pSpi);
 
 
 	pUserApi->RegisterFront("tcp://180.168.146.187:10010");
@@ -18,8 +18,6 @@ int main()
 	pUserApi->Init();
 
 	pUserApi->Join();
-
-	pUserApi->Release();
 
 	return 0;
 }

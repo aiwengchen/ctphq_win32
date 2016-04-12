@@ -10,6 +10,7 @@ class CtphqMdApi : public CThostFtdcMdSpi
 public:
 	CtphqMdApi(CThostFtdcMdApi *pUserApi):m_pUserApi(pUserApi){}
 	~CtphqMdApi(){}
+	
 	///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	virtual void OnFrontConnected();
 
@@ -41,25 +42,13 @@ public:
 
 	///取消订阅行情应答
 	virtual void OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-
-	///订阅询价应答
-	virtual void OnRspSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-
-	///取消订阅询价应答
-	virtual void OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-
+		
 	///深度行情通知
 	virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData);
-
-	///询价通知
-	virtual void OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp);
-
+	
 private:
 	CThostFtdcMdApi *m_pUserApi;
 };
-
-
-
 
 #endif // !CTPHQMDAPI_H
 

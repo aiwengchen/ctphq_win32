@@ -3,103 +3,107 @@
 using namespace std;
 
 
-
-
+///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 void CtphqMdApi::OnFrontConnected()
 {
-	CThostFtdcReqUserLoginField reqUserLogin;
-	//会员代码
-	TThostFtdcBrokerIDType g_chBrokerID = "9999";
-	//交易用户代码
-	TThostFtdcUserIDType g_chUserID = "015809";
-	TThostFtdcPasswordType g_chPassword = "12qwasZX";
-	//get BrokerID
-	//cout << "BrokerID:";
-	//cin >> g_chBrokerID;
-	strcpy_s(reqUserLogin.BrokerID, g_chBrokerID);
+	//user login
+	CThostFtdcReqUserLoginField  m_reqUserLogin;
+	//Broker
+	TThostFtdcBrokerIDType  m_chBrokerID = "9999";
+	//userID
+	TThostFtdcUserIDType  m_UserID = "015809";
+	//password
+	TThostFtdcPasswordKeyType  m_Password = "12qwasZX";
 
-	//get userid
-	//cout << "UserID:";
-	//cin >> g_chUserID;
-	strcpy_s(reqUserLogin.UserID, g_chUserID);
+	strcpy_s(m_reqUserLogin.BrokerID, m_chBrokerID);
+	strcpy_s(m_reqUserLogin.UserID, m_UserID);
+	strcpy_s(m_reqUserLogin.Password, m_Password);
 
-	//get password
-	//cout << "password:";
-	//cin >> reqUserLogin.Password;
-	
-	strcpy_s(reqUserLogin.Password, g_chPassword);
-
-	m_pUserApi->ReqUserLogin(&reqUserLogin, 0);
-
+	m_pUserApi->ReqUserLogin(&m_reqUserLogin, 0);
 }
 
-//当客户端与交易托管系统通信连接断开时，该方法被调用
+///当客户端与交易后台通信连接断开时，该方法被调用。当发生这个情况后，API会自动重新连接，客户端可不做处理。
+///@param nReason 错误原因
+///        0x1001 网络读失败
+///        0x1002 网络写失败
+///        0x2001 接收心跳超时
+///        0x2002 发送心跳失败
+///        0x2003 收到错误报文
 void CtphqMdApi::OnFrontDisconnected(int nReason)
 {
-	cout << "OnFrontDisconnected--请检查网络！" << endl;
 }
 
+///心跳超时警告。当长时间未收到报文时，该方法被调用。
+///@param nTimeLapse 距离上次接收报文的时间
 void CtphqMdApi::OnHeartBeatWarning(int nTimeLapse)
 {
+	nTimeLapse = 5;
 }
 
-void CtphqMdApi::OnRspUserLogin(CThostFtdcRspUserLoginField * pRspUserLogin, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+
+///登录请求响应
+void CtphqMdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	cout << "OnRspUserLogin:" << endl;
-	cout << "ErrorCode=" << pRspInfo->ErrorID << " ErrorMsg=" << pRspInfo->ErrorMsg << endl;
-	cout << "RequestID= " << nRequestID << "Chain=" << bIsLast << endl;
-	//端登失败，客户端徐进行错误处理
 	if (pRspInfo->ErrorID != 0)
 	{
-		cout << "Failed to login,errorcode=" << pRspInfo->ErrorID << "errormsg=" << pRspInfo->ErrorMsg << "requestid=" << nRequestID
-			<< "chain=" << bIsLast << endl;
+		cerr << "Failed to Login!" << endl;
+		cerr << "Errorcode= " << pRspInfo->ErrorID << "  Errormsg= " << pRspInfo->ErrorMsg << endl;
+		cerr << "RequestID= " << nRequestID << "  chain= " << bIsLast << endl;
 		exit(-1);
 	}
-	//端登成功
-	//订阅行情
+	else
+	{
+		cerr << "Login in OK:" <<" TradingDay= " << pRspUserLogin->TradingDay << endl;
 	
-	char *Instrumnet[] = { "au1606","ag1606" };
-	m_pUserApi->SubscribeMarketData(Instrumnet, 2);
-	//退订行情
-	//m_pUserApi->UnSubscribeMarketData(Instrumnet, 2);
+		///订阅行情。
+		///@param ppInstrumentID 合约ID
+		///@param nCount 要订阅/退订行情的合约个数
+		///@remark
+		char *pInstrumentID[] = { "au1606","ag1606" };
+		int iCount = 2;
+		m_pUserApi->SubscribeMarketData(pInstrumentID, iCount);
+		
+		///退订行情。
+		///@param ppInstrumentID 合约ID
+		///@param nCount 要订阅/退订行情的合约个数
+		///@remark
+		m_pUserApi->UnSubscribeMarketData(pInstrumentID, iCount);
+
+	}
 }
 
-void CtphqMdApi::OnRspUserLogout(CThostFtdcUserLogoutField * pUserLogout, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+
+
+///登出请求响应
+void CtphqMdApi::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	cout << "goodbye.";
+	cerr << "GoodBye!" << pUserLogout->UserID << endl;
 }
 
-void CtphqMdApi::OnRspError(CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+///错误应答
+void CtphqMdApi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	cout << "OnRspError! errorcode=" << pRspInfo->ErrorID << "errormsg=" << pRspInfo->ErrorMsg << "requestid=" << nRequestID
 		<< "chain=" << bIsLast << endl;
 	cout << "出错啦！请检查" << endl;
 }
 
-void CtphqMdApi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField * pSpecificInstrument, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+///订阅行情应答
+void CtphqMdApi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
+	cerr << "OK " << pSpecificInstrument->InstrumentID << endl;
 }
 
-void CtphqMdApi::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField * pSpecificInstrument, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+///取消订阅行情应答
+void CtphqMdApi::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
+	cerr << "OVER " << pSpecificInstrument->InstrumentID << endl;
 }
 
-void CtphqMdApi::OnRspSubForQuoteRsp(CThostFtdcSpecificInstrumentField * pSpecificInstrument, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
+///深度行情通知
+void CtphqMdApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
-}
-
-void CtphqMdApi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField * pSpecificInstrument, CThostFtdcRspInfoField * pRspInfo, int nRequestID, bool bIsLast)
-{
-}
-
-void CtphqMdApi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField * pDepthMarketData)
-{
-	cerr << "合约 " << pDepthMarketData->InstrumentID << "  最新 " << pDepthMarketData->LastPrice << "  成交量 " << pDepthMarketData->Volume
-		<< "  买一价 " << pDepthMarketData->BidPrice1 << "卖一价" << pDepthMarketData->AskPrice1 << "  最高 " << pDepthMarketData->HighestPrice
-		<< "  最低 " << pDepthMarketData->LowestPrice << "  开盘 " << pDepthMarketData->OpenPrice << "  时间 " << pDepthMarketData->UpdateTime << endl;
-
-}
-
-void CtphqMdApi::OnRtnForQuoteRsp(CThostFtdcForQuoteRspField * pForQuoteRsp)
-{
+	cerr << pDepthMarketData->InstrumentID << "  " << pDepthMarketData->LastPrice << "  " << pDepthMarketData->Volume << "  " << pDepthMarketData->OpenInterest << "  "
+		<< pDepthMarketData->BidPrice1 << "  " << pDepthMarketData->AskPrice1 << "  " << pDepthMarketData->OpenPrice << "  " << pDepthMarketData->HighestPrice << "  "
+		<< pDepthMarketData->LowestPrice << "  " << pDepthMarketData->TradingDay << "  " << pDepthMarketData->UpdateTime << endl;
 }
