@@ -67,7 +67,7 @@ void CtphqMdApi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 		///@param ppInstrumentID 合约ID
 		///@param nCount 要订阅/退订行情的合约个数
 		///@remark
-		m_pUserApi->UnSubscribeMarketData(pInstrumentID, iCount);
+		//m_pUserApi->UnSubscribeMarketData(pInstrumentID, iCount);
 
 	}
 }

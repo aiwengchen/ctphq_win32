@@ -103,10 +103,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>E:\Source\ctphq_win32\ctptrader\Api\trader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\Source\ctphq_win32\ctptrader\Api\trader;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,6 +149,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ctptrader.cpp" />
+    <ClCompile Include="..\ctptraderApi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Api\ThostFtdcMdApi.h" />
+    <ClInclude Include="..\Api\ThostFtdcTraderApi.h" />
+    <ClInclude Include="..\Api\ThostFtdcUserApiDataType.h" />
+    <ClInclude Include="..\Api\ThostFtdcUserApiStruct.h" />
+    <ClInclude Include="..\ctptraderApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Api\error.dtd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Api\error.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Api\md5.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
