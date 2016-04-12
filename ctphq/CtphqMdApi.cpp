@@ -2,17 +2,17 @@
 #include "CtphqMdApi.h"
 using namespace std;
 
-//会员代码
-TThostFtdcBrokerIDType g_chBrokerID="9999";
-//交易用户代码
-TThostFtdcUserIDType g_chUserID="015809";
-TThostFtdcPasswordType g_chPassword = "12qwasZX";
 
-TThostFtdcExchangeIDType	g_chExchangeID;
+
 
 void CtphqMdApi::OnFrontConnected()
 {
 	CThostFtdcReqUserLoginField reqUserLogin;
+	//会员代码
+	TThostFtdcBrokerIDType g_chBrokerID = "9999";
+	//交易用户代码
+	TThostFtdcUserIDType g_chUserID = "015809";
+	TThostFtdcPasswordType g_chPassword = "12qwasZX";
 	//get BrokerID
 	//cout << "BrokerID:";
 	//cin >> g_chBrokerID;
